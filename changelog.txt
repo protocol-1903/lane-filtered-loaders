@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.12
+Date: 2025-07-08
+  Bugfixes:
+    - Fixed a crash with miniloaders redux by marking it incompatible. tl;dr far too complicated to fix normally and you have no reason to be using both mods
+---------------------------------------------------------------------------------------------------
 Version: 1.1.11
 Date: 2025-03-28
   Changes:
