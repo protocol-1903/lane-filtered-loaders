@@ -1,0 +1,71 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.1.11
+Date: 2025-03-28
+  Changes:
+    - Added a sound when pasting loader settings
+    - Refactored code to make future additions easier and remove potential crashes
+---------------------------------------------------------------------------------------------------
+Version: 1.1.10
+Date: 2025-03-28
+  Features:
+    - Added ability to copy-paste loader type and settings using shift+left/right click
+  Bugfixes:
+    - Fixed ghost loaders becoming placed when altering the type of filtering
+---------------------------------------------------------------------------------------------------
+Version: 1.1.9
+Date: 2025-02-25
+  Changes:
+    - Version bump so Stacking Loaders integrates properly. Apologies for the crashes. Again. Again.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.8
+Date: 2025-02-25
+  Changes:
+    - Removed migrations. You'll have to do it manually. It just doesn't work with AAI.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.7
+Date: 2025-02-25
+  Changes:
+    - Version bump so Stacking Loaders integrates properly. Apologies for the crashes. Again.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.6
+Date: 2025-02-25
+  Bugfixes:
+    - Fixed a crash when using AAI Loaders in Expensive mode. Again.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.5
+Date: 2025-02-25
+  Changes:
+    - Version bump so Stacking Loaders integrates properly. Apologies for the crashes.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.4
+Date: 2025-02-25
+  Bugfixes:
+    - Fixed a crash when loading a save without Stacking Loaders. For real this time. Like actually
+---------------------------------------------------------------------------------------------------
+Version: 1.1.3
+Date: 2025-02-25
+  Bugfixes:
+    - Fixed a crash when loading a save without Stacking Loaders. For real this time.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.2
+Date: 2025-02-25
+  Bugfixes:
+    - Fixed a crash when loading a save without Stacking Loaders
+---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 2025-02-25
+  Bugfixes:
+    - Fixed a crash when using AAI Loaders in Expensive mode
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 2025-02-25
+  Features:
+    - Loaders can be changed from generic to lane-specific filters in-game using an addon GUI when inspecting a loader
+    - Supports all loader mods (Miniloaders is not a loader mod)
+  Changes:
+    - Migrates existing loaders, this may break things. Ghost entities will not be migrated.
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2025-02-11
+  Info:
+    - Initial release
