@@ -1,82 +1,15 @@
-local function alternative(name)
-  if name:sub(1, 9) == "aai-lane-" then
-    -- aai lane filtered loader
-    return "aai-" .. name:sub(10)
-  elseif name:sub(1, 4) == "aai-" then
-    -- aai non-lane filtered loader
-    return "aai-lane-" .. name:sub(5)
-  elseif name:sub(1, 5) == "lane-" then
-    -- non-aai lane filtered loader
-    return name:sub(6)
-  else
-    -- non-aai non-lane filtered laoder
-    return "lane-" .. name
-  end
-end
-
-local function state(name)
-  if name:sub(1, 9) == "aai-lane-" or name:sub(1, 5) == "lane-" then
-    -- lane filtered loader
-    return true
-  else
-    -- non-lane filtered loader
-    return false
-  end
-end
-
--- when loader gui opened add custom gui
-script.on_event(defines.events.on_gui_opened, function (event)
-  local entity = event.entity and (event.entity.type == "entity-ghost" and event.entity.ghost_type or event.entity.type)
-
-  -- if loader opened, handle it
-  if entity == "loader" or entity == "loader-1x1" then
-    local player = game.players[event.player_index]
-    local state = state(event.entity and (event.entity.type == "entity-ghost" and event.entity.ghost_name or event.entity.name))
-
-    -- if gui exists then delete it
-    if player.gui.relative["lfl-frame"] then
-      player.gui.relative["lfl-frame"].destroy()
-    end
-
-    local window = player.gui.relative.add{
-      type = "frame",
-      name = "lfl-frame",
-      caption = { "lfl-window.frame" },
-      direction = "horizontal",
-      anchor = {
-        gui = defines.relative_gui_type.loader_gui,
-        position = defines.relative_gui_position.right
-      }
-    }
-    local window = window.add{
-      type = "frame",
-      name = "inner-frame",
-      style = "inside_shallow_frame_with_padding",
-      direction = "vertical",
-    }
-    window.add{
-      type = "radiobutton",
-      name = "lfl-radiobutton-loader",
-      caption = { "lfl-window.radiobutton-loader" },
-      state = not state
-    }
-    window.add{
-      type = "radiobutton",
-      name = "lfl-radiobutton-lane",
-      caption = { "lfl-window.radiobutton-lane" },
-      state = state
-    }
-  end
-end)
+assert(prototypes.mod_data["lane-filtered-loaders"], "ERROR: mod-data for lane-filtered-loaders not found!")
+local alt_loaders = assert(prototypes.mod_data["lane-filtered-loaders"].data.alt_loaders, "ERROR: data.alt_loaders for lane-filtered-loaders not found!")
+local lane_filtered_loaders = assert(prototypes.mod_data["lane-filtered-loaders"].data.lane_filtered_loaders, "ERROR: data.lane_filtered_loaders for lane-filtered-loaders not found!")
 
 local function replace(old_entity, player)
   -- swap open the new loader gui if the old loader gui is opened
-  local swap_gui = player and player.opened and player.opened == old_entity
+  local swap_gui = player and player.opened == old_entity
 
   local surface = old_entity.surface
   local parameters = {
-    name = old_entity.type == "entity-ghost" and "entity-ghost" or alternative(old_entity.type == "entity-ghost" and old_entity.ghost_name or old_entity.name),
-    ghost_name = alternative(old_entity.type == "entity-ghost" and old_entity.ghost_name or old_entity.name),
+    name = old_entity.type == "entity-ghost" and "entity-ghost" or alt_loaders[old_entity.type == "entity-ghost" and old_entity.ghost_name or old_entity.name],
+    ghost_name = alt_loaders[old_entity.type == "entity-ghost" and old_entity.ghost_name or old_entity.name],
     position = old_entity.position,
     direction = old_entity.direction,
     quality = old_entity.quality,
@@ -177,7 +110,7 @@ script.on_event(defines.events.on_entity_settings_pasted, function (event)
   local source = event.source.type == "entity-ghost" and event.source.ghost_prototype or event.source.prototype
   local destination = event.destination.type == "entity-ghost" and event.destination.ghost_prototype or event.destination.prototype
 
-  if state(source.name) ~= state(destination.name) then
+  if lane_filtered_loaders[source.name] ~= lane_filtered_loaders[destination.name] then
     -- two different styles, need to swap the destination to match the source
     replace(event.destination, game.players[event.player_index])
   end
@@ -187,13 +120,48 @@ end)
 
 -- update gui events
 script.on_event(defines.events.on_gui_checked_state_changed, function (event)
-  if event.element.name:sub(1, 15) == "lfl-radiobutton" then
-    local element = event.element
-    local other_elem = element.name:sub(-4) == "lane" and element.parent["lfl-radiobutton-loader"] or element.parent["lfl-radiobutton-lane"]
+  if event.element.get_mod() == "lane-filtered-loaders" and event.element.name == "checkbox-lane" then
+    replace(game.players[event.player_index].opened, game.players[event.player_index])
+  end
+end)
 
-    if other_elem.state == element.state then
-      replace(game.players[event.player_index].opened, game.players[event.player_index])
+-- when loader gui opened add custom gui
+script.on_event(defines.events.on_gui_opened, function (event)
+  local entity = event.entity and (event.entity.type == "entity-ghost" and event.entity.ghost_type or event.entity.type)
+
+  -- if loader opened, handle it
+  if entity == "loader" or entity == "loader-1x1" then
+    local player = game.players[event.player_index]
+
+    -- if gui exists then delete it
+    if player.gui.relative["lfl-frame"] then
+      player.gui.relative["lfl-frame"].destroy()
     end
+
+    log(event.entity.type == "entity-ghost" and event.entity.ghost_name or event.entity.name)
+    log(serpent.block(lane_filtered_loaders))
+    -- create gui
+    player.gui.relative.add{
+      type = "frame",
+      name = "lfl-frame",
+      caption = { "lfl-window.frame" },
+      direction = "horizontal",
+      anchor = {
+        gui = defines.relative_gui_type.loader_gui,
+        position = defines.relative_gui_position.right
+      }
+    }.add{
+      type = "frame",
+      name = "inner-frame",
+      style = "inside_shallow_frame_with_padding",
+      direction = "vertical",
+    }.add{
+      type = "checkbox",
+      name = "checkbox-lane",
+      style = "caption_checkbox",
+      caption = { "lfl-window.checkbox-lane" },
+      state = lane_filtered_loaders[event.entity and (event.entity.type == "entity-ghost" and event.entity.ghost_name or event.entity.name)]
+    }
   end
 end)
 

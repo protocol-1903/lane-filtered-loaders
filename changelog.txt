@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.13
+Date: 2025-07-21
+  Changes:
+    - Updated GUI to be more expandable in the future if need be
+    - Increased runtime performance by pregenerating some event data
+    - Increased load speed by reducing logic useage
+    - Added compatability with Loaders Make Full Stacks to use the same host GUI element if both mods are enabled
+---------------------------------------------------------------------------------------------------
 Version: 1.1.12
 Date: 2025-07-08
   Bugfixes:
