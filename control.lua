@@ -77,7 +77,7 @@ local function replace(old_entity, player)
   end
 
   -- update stack size if appliccable
-  if stack then
+  if stack and new_entity.prototype.loader_adjustable_belt_stack_size then
     new_entity.loader_belt_stack_size_override = stack
   end
 
@@ -113,7 +113,19 @@ local function replace(old_entity, player)
   if swap_gui then
     player.opened = new_entity
   end
+
+  return new_entity
 end
+
+remote.add_interface("lane-filtered-loaders",
+  {
+    ["build-check"] = function (entity, player)
+      if player.mod_settings["loaders-lane-filtered-by-default"].value then
+        replace(entity, player)
+      end
+    end
+  }
+)
 
 -- copy paste settings, but change the mode if they are different
 script.on_event(defines.events.on_entity_settings_pasted, function (event)
@@ -138,6 +150,17 @@ script.on_event(defines.events.on_gui_checked_state_changed, function (event)
     replace(game.players[event.player_index].opened, game.players[event.player_index])
   end
 end)
+
+-- only register event if the event filter exists, i.e. another mod hasn't overridden it (such as loaders make full stacks)
+if prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter then
+  assert(#prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter ~= 0, "ERROR: data.build_event_filter for lane-filtered-loaders not found!")
+  script.on_event(defines.events.on_built_entity, function (event)
+    -- if player has setting enabled, then replace with custom
+    if game.players[event.player_index].mod_settings["loaders-lane-filtered-by-default"].value then
+      replace(event.entity, game.players[event.player_index])
+    end
+  end, prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter)
+end
 
 -- when loader gui opened add custom gui
 script.on_event(defines.events.on_gui_opened, function (event)
@@ -189,14 +212,3 @@ script.on_event(defines.events.on_gui_closed, function (event)
     end
   end
 end)
-
--- only register event if the event filter exists, i.e. another mod hasn't overridden it (such as loaders make full stacks)
-if prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter then
-  assert(#prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter ~= 0, "ERROR: data.build_event_filter for lane-filtered-loaders not found!")
-  script.on_event(defines.events.on_built_entity, function (event)
-    -- if player has setting enabled, then replace with custom
-    if game.players[event.player_index].mod_settings["loaders-lane-filtered-by-default"].value then
-      replace(event.entity, game.players[event.player_index])
-    end
-  end, prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter)
-end

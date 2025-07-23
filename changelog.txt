@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.15
+Date: 2025-07-23
+  Changes:
+    - Added a remote script for use in other loader mods
+    - Adjusted runtime logic to prevent a potential crash
+---------------------------------------------------------------------------------------------------
 Version: 1.1.14
 Date: 2025-07-23
   Features:
