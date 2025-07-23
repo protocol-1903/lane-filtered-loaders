@@ -1,4 +1,4 @@
-local alt_loaders, lane_filtered_loaders = {}, {}
+local alt_loaders, lane_filtered_loaders, build_event_filter = {}, {}, {}
 
 for _, prototype in pairs{
   data.raw.loader,
@@ -21,6 +21,10 @@ for _, prototype in pairs{
       lane_filtered_loaders[new.name] = true
       alt_loaders[loader.name] = new.name
       alt_loaders[new.name] = loader.name
+      build_event_filter[#build_event_filter+1] = {filter = "name", name = loader.name}
+      build_event_filter[#build_event_filter+1] = {filter = "ghost_name", name = loader.name}
+      build_event_filter[#build_event_filter+1] = {filter = "name", name = new.name}
+      build_event_filter[#build_event_filter+1] = {filter = "ghost_name", name = new.name}
     elseif mods["aai-loaders"] and lane_filtered_loaders[loader.name] == nil and loader.name:sub(1, 4) == "aai-" then
       -- make loader using aai bcause i need it to 
       local aai_data = AAILoaders.make_tier{
@@ -60,6 +64,10 @@ for _, prototype in pairs{
       lane_filtered_loaders[aai_data.loader.name] = true
       alt_loaders[loader.name] = aai_data.loader.name
       alt_loaders[aai_data.loader.name] = loader.name
+      build_event_filter[#build_event_filter+1] = {filter = "name", name = loader.name}
+      build_event_filter[#build_event_filter+1] = {filter = "ghost_name", name = loader.name}
+      build_event_filter[#build_event_filter+1] = {filter = "name", name = aai_data.loader.name}
+      build_event_filter[#build_event_filter+1] = {filter = "ghost_name", name = aai_data.loader.name}
     end
   end
 end
@@ -69,7 +77,8 @@ data:extend{{
   name = "lane-filtered-loaders",
   data = {
     alt_loaders = alt_loaders,
-    lane_filtered_loaders = lane_filtered_loaders
+    lane_filtered_loaders = lane_filtered_loaders,
+    build_event_filter = build_event_filter
   },
   hidden_in_factoriopedia = true,
   hidden = true

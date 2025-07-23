@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.1.14
+Date: 2025-07-23
+  Features:
+    - Added a mod setting to decide if newly placed loaders should be in lane filter or generic mode
+  Changes:
+    - Loaders will attempt to keep their filters when changed to/from lane filter mode. If this is not possible, filters will be deleted
+  Bugfixes:
+    - Fixed a crash when copy/pasting settings from the wrong entities
+---------------------------------------------------------------------------------------------------
 Version: 1.1.13
 Date: 2025-07-21
   Changes:

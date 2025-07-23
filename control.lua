@@ -33,6 +33,12 @@ local function replace(old_entity, player)
   local red_connections = {}
   local green_connections = {}
   local fluid
+  local filters = {}
+
+  -- save filters
+  for i=1, old_entity.filter_slot_count do
+    filters[#filters+1] = old_entity.get_filter(i)
+  end
 
   for _, connection in pairs(old_entity.get_wire_connector(defines.wire_connector_id.circuit_red, true).connections) do
     red_connections[#red_connections+1] = connection.target
@@ -77,6 +83,11 @@ local function replace(old_entity, player)
 
   -- set filter(s) and circuit controls
   if mode then new_entity.loader_filter_mode = mode end
+  if #filters <= new_entity.filter_slot_count then
+    for i, filter in pairs(filters) do
+      new_entity.set_filter(i, filter)
+    end
+  end
   if control_data then
     local new_control = new_entity.get_or_create_control_behavior()
 
@@ -109,6 +120,9 @@ script.on_event(defines.events.on_entity_settings_pasted, function (event)
 
   local source = event.source.type == "entity-ghost" and event.source.ghost_prototype or event.source.prototype
   local destination = event.destination.type == "entity-ghost" and event.destination.ghost_prototype or event.destination.prototype
+
+  -- make sure both are valid entities
+  if lane_filtered_loaders[source.name] == nil or lane_filtered_loaders[destination.name] == nil then return end
 
   if lane_filtered_loaders[source.name] ~= lane_filtered_loaders[destination.name] then
     -- two different styles, need to swap the destination to match the source
@@ -175,3 +189,14 @@ script.on_event(defines.events.on_gui_closed, function (event)
     end
   end
 end)
+
+-- only register event if the event filter exists, i.e. another mod hasn't overridden it (such as loaders make full stacks)
+if prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter then
+  assert(#prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter ~= 0, "ERROR: data.build_event_filter for lane-filtered-loaders not found!")
+  script.on_event(defines.events.on_built_entity, function (event)
+    -- if player has setting enabled, then replace with custom
+    if game.players[event.player_index].mod_settings["loaders-lane-filtered-by-default"].value then
+      replace(event.entity, game.players[event.player_index])
+    end
+  end, prototypes.mod_data["lane-filtered-loaders"].data.build_event_filter)
+end
