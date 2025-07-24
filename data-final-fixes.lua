@@ -49,6 +49,8 @@ for _, prototype in pairs{
       -- modify required values
       aai_data.loader.filter_count = 2
       aai_data.loader.per_lane_filters = true
+      aai_data.loader.max_belt_stack_size = loader.max_belt_stack_size
+      aai_data.loader.adjustable_belt_stack_size = loader.adjustable_belt_stack_size
       aai_data.loader.hidden_in_factoriopedia = true
 
       -- patch stuff we don't want autofilled by aai
