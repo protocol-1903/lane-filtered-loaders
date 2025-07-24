@@ -175,8 +175,6 @@ script.on_event(defines.events.on_gui_opened, function (event)
       player.gui.relative["lfl-frame"].destroy()
     end
 
-    log(event.entity.type == "entity-ghost" and event.entity.ghost_name or event.entity.name)
-    log(serpent.block(lane_filtered_loaders))
     -- create gui
     player.gui.relative.add{
       type = "frame",
